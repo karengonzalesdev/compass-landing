@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compass — Encuentra tu norte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@300;400;500;600&family=Bricolage+Grotesque:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,500&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --white: #FAFAF7;
+  --off-white: #F2F0EB;
+  --sage: #7A9E7E;
+  --sage-light: #A8C5AC;
+  --sage-pale: #DDE9DE;
+  --lime: #C8E54A;
+  --lime-dark: #9AB832;
+  --earth: #C4956A;
+  --earth-light: #E8C9A8;
+  --earth-pale: #F5EDE3;
+  --forest: #2D4A30;
+  --forest-mid: #3D6641;
+  --text-dark: #1A1F1B;
+  --text-mid: #4A5C4D;
+  --text-muted: #8A9E8D;
+  --border-light: rgba(122,158,126,0.2);
+  --border-mid: rgba(122,158,126,0.35);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--white);
+  color: var(--text-dark);
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+  line-height: 1.7;
+}
+
+/* CURSOR */
+* { cursor: none !important; }
+.cursor {
+  width: 10px; height: 10px;
+  background: var(--lime);
+  border-radius: 50%;
+  position: fixed; z-index: 9999;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s, background 0.2s;
+  mix-blend-mode: multiply;
+}
+.cursor-ring {
+  width: 36px; height: 36px;
+  border: 1.5px solid var(--sage);
+  border-radius: 50%;
+  position: fixed; z-index: 9998;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: all 0.15s ease;
+}
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 3rem;
+  background: rgba(250,250,247,0.88);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.logo {
+  display: flex; align-items: center; gap: 0.6rem;
+  text-decoration: none;
+}
+
+.logo-mark {
+  width: 34px; height: 34px;
+  background: var(--forest);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.logo-mark svg { width: 20px; height: 20px; }
+
+.logo-text {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  letter-spacing: -0.02em;
+}
+
+.nav-links {
+  display: flex; gap: 2.5rem; list-style: none;
+}
+
+.nav-links a {
+  color: var(--text-mid);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 400;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--forest); }
+
+.nav-pill {
+  background: var(--forest);
+  color: var(--white);
+  border: none;
+  padding: 0.65rem 1.5rem;
+  border-radius: 100px;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  transition: all 0.25s;
+}
+
+.nav-pill:hover {
+  background: var(--forest-mid);
+  transform: scale(1.03);
+}
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  padding: 9rem 3rem 5rem;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 4rem;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--sage-pale);
+  color: var(--forest);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.4rem 1rem;
+  border-radius: 100px;
+  margin-bottom: 2rem;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  animation: fadeUp 0.7s 0.1s ease forwards;
+}
+
+.hero-badge-dot {
+  width: 6px; height: 6px;
+  background: var(--sage);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.7); }
+}
+
+h1 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: clamp(3rem, 5.5vw, 5rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--text-dark);
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.7s 0.25s ease forwards;
+}
+
+h1 .italic-accent {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--forest-mid);
+}
+
+h1 .highlight {
+  position: relative;
+  display: inline-block;
+}
+
+h1 .highlight::after {
+  content: '';
+  position: absolute;
+  bottom: 4px; left: 0; right: 0;
+  height: 10px;
+  background: var(--lime);
+  opacity: 0.5;
+  z-index: -1;
+  border-radius: 2px;
+}
+
+.hero-sub {
+  font-size: 1.1rem;
+  color: var(--text-mid);
+  line-height: 1.75;
+  max-width: 480px;
+  margin-bottom: 2.5rem;
+  font-weight: 300;
+  opacity: 0;
+  animation: fadeUp 0.7s 0.4s ease forwards;
+}
+
+.hero-actions {
+  display: flex; gap: 0.875rem; align-items: center;
+  opacity: 0;
+  animation: fadeUp 0.7s 0.55s ease forwards;
+}
+
+.btn-primary {
+  background: var(--forest);
+  color: var(--white);
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 100px;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  transition: all 0.25s;
+}
+
+.btn-primary:hover {
+  background: var(--forest-mid);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(45,74,48,0.25);
+}
+
+.btn-primary .arrow {
+  width: 20px; height: 20px;
+  background: var(--lime);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem;
+  transition: transform 0.2s;
+}
+
+.btn-primary:hover .arrow { transform: translateX(2px); }
+
+.btn-outline {
+  background: transparent;
+  color: var(--text-mid);
+  border: 1.5px solid var(--border-mid);
+  padding: 1rem 1.75rem;
+  border-radius: 100px;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 400;
+  text-decoration: none;
+  transition: all 0.25s;
+}
+
+.btn-outline:hover {
+  border-color: var(--sage);
+  color: var(--forest);
+}
+
+/* HERO VISUAL */
+.hero-visual {
+  opacity: 0;
+  animation: fadeUp 0.7s 0.5s ease forwards;
+  position: relative;
+}
+
+.hero-card-main {
+  background: var(--forest);
+  border-radius: 28px;
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 0.85;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hero-card-bg-circle {
+  position: absolute;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  background: rgba(200,229,74,0.12);
+  right: -80px; top: -80px;
+}
+
+.hero-card-bg-circle2 {
+  position: absolute;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: rgba(122,158,126,0.15);
+  left: -60px; bottom: -60px;
+}
+
+.card-eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(250,250,247,0.5);
+  font-weight: 400;
+}
+
+.card-score-row {
+  display: flex; align-items: flex-end; gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.card-score {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 500;
+  color: var(--white);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.card-score-label {
+  font-size: 0.8rem;
+  color: rgba(250,250,247,0.6);
+  padding-bottom: 0.5rem;
+}
+
+.card-bars {
+  display: flex; gap: 6px; align-items: flex-end;
+  height: 60px; margin-top: 1.5rem;
+}
+
+.bar {
+  flex: 1;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.bar-fill {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: var(--lime);
+  border-radius: 4px;
+  transition: height 1s ease;
+}
+
+.bar:nth-child(1) .bar-fill { height: 40%; }
+.bar:nth-child(2) .bar-fill { height: 65%; }
+.bar:nth-child(3) .bar-fill { height: 50%; }
+.bar:nth-child(4) .bar-fill { height: 80%; }
+.bar:nth-child(5) .bar-fill { height: 55%; }
+.bar:nth-child(6) .bar-fill { height: 90%; background: var(--lime); }
+
+.card-areas {
+  display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1.5rem;
+}
+
+.area-tag {
+  font-size: 0.7rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 100px;
+  font-weight: 400;
+}
+
+.area-tag.active {
+  background: var(--lime);
+  color: var(--forest);
+}
+
+.area-tag.inactive {
+  background: rgba(255,255,255,0.1);
+  color: rgba(250,250,247,0.6);
+}
+
+/* Floating cards */
+.float-card-1 {
+  position: absolute;
+  top: -20px; right: -30px;
+  background: var(--white);
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 8px 32px rgba(45,74,48,0.12);
+  display: flex; align-items: center; gap: 0.75rem;
+  min-width: 180px;
+  animation: floatY 4s ease-in-out infinite;
+}
+
+.float-card-2 {
+  position: absolute;
+  bottom: 60px; left: -40px;
+  background: var(--white);
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 8px 32px rgba(45,74,48,0.12);
+  min-width: 160px;
+  animation: floatY 5s 1s ease-in-out infinite;
+}
+
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.float-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.float-label { font-size: 0.7rem; color: var(--text-muted); font-weight: 400; }
+.float-value { font-size: 0.9rem; color: var(--text-dark); font-weight: 500; }
+
+/* LOGOS / SOCIAL PROOF */
+.proof-bar {
+  background: var(--off-white);
+  padding: 1.5rem 3rem;
+  display: flex; align-items: center; gap: 3rem;
+  justify-content: center;
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+  overflow: hidden;
+}
+
+.proof-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.proof-divider {
+  width: 1px; height: 20px;
+  background: var(--border-mid);
+  flex-shrink: 0;
+}
+
+.proof-stat {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0.15rem;
+  flex-shrink: 0;
+}
+
+.proof-num {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--forest);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.proof-desc {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* SECTION COMMONS */
+.section {
+  padding: 7rem 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tag-pill {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  background: var(--sage-pale);
+  color: var(--forest);
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 0.35rem 0.9rem;
+  border-radius: 100px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+
+.section-h2 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--text-dark);
+  margin-bottom: 1.25rem;
+}
+
+.section-h2 em {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--forest-mid);
+}
+
+/* PROBLEM CARDS */
+.problem-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-top: 4rem;
+}
+
+.problem-card {
+  background: var(--off-white);
+  border-radius: 20px;
+  padding: 2rem;
+  border: 1px solid transparent;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.problem-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 20px;
+  border: 1.5px solid var(--sage-light);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.problem-card:hover::before { opacity: 1; }
+.problem-card:hover { transform: translateY(-4px); }
+
+.problem-emoji {
+  font-size: 2rem;
+  margin-bottom: 1.25rem;
+  display: block;
+  font-style: normal;
+}
+
+.problem-title {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.problem-body {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+/* HOW SECTION */
+.how-wrap {
+  background: var(--forest);
+  border-radius: 32px;
+  padding: 5rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.how-wrap::before {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(200,229,74,0.12) 0%, transparent 70%);
+  top: -150px; right: -100px;
+  pointer-events: none;
+}
+
+.how-wrap::after {
+  content: '';
+  position: absolute;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(122,158,126,0.15) 0%, transparent 70%);
+  bottom: -80px; left: -80px;
+  pointer-events: none;
+}
+
+.how-header {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 3rem; margin-bottom: 4rem; align-items: end;
+  position: relative; z-index: 1;
+}
+
+.how-header .tag-pill {
+  background: rgba(200,229,74,0.15);
+  color: var(--lime);
+}
+
+.how-header .section-h2 {
+  color: var(--white);
+}
+
+.how-header .section-h2 em { color: var(--lime); }
+
+.how-header p {
+  color: rgba(250,250,247,0.6);
+  font-size: 1rem;
+  line-height: 1.75;
+  align-self: end;
+}
+
+.steps-list {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  position: relative; z-index: 1;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.step-item {
+  padding: 2.5rem 2rem;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  transition: background 0.3s;
+}
+
+.step-item:last-child { border-right: none; }
+.step-item:hover { background: rgba(255,255,255,0.04); }
+
+.step-num {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 2rem;
+  color: var(--lime);
+  opacity: 0.6;
+  line-height: 1;
+  margin-bottom: 1.25rem;
+}
+
+.step-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--white);
+  margin-bottom: 0.6rem;
+  letter-spacing: -0.02em;
+}
+
+.step-desc {
+  font-size: 0.875rem;
+  color: rgba(250,250,247,0.55);
+  line-height: 1.7;
+}
+
+/* FEATURES */
+.features-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 1.25rem;
+  margin-top: 4rem;
+}
+
+.feature-big {
+  background: var(--earth-pale);
+  border-radius: 24px;
+  padding: 3rem;
+  grid-row: span 2;
+  display: flex; flex-direction: column; justify-content: space-between;
+  border: 1px solid rgba(196,149,106,0.2);
+  transition: all 0.3s;
+}
+
+.feature-big:hover { transform: translateY(-4px); }
+
+.feature-small {
+  background: var(--sage-pale);
+  border-radius: 20px;
+  padding: 2rem 2.25rem;
+  border: 1px solid rgba(122,158,126,0.2);
+  transition: all 0.3s;
+}
+
+.feature-small:hover { transform: translateY(-3px); }
+
+.feature-small.lime {
+  background: #F2F8D8;
+  border-color: rgba(200,229,74,0.4);
+}
+
+.feature-icon-wrap {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+}
+
+.feature-big .feature-icon-wrap { background: rgba(196,149,106,0.2); }
+.feature-small .feature-icon-wrap { background: rgba(122,158,126,0.2); }
+.feature-small.lime .feature-icon-wrap { background: rgba(200,229,74,0.3); }
+
+.feature-title {
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  margin-bottom: 0.6rem;
+  letter-spacing: -0.02em;
+}
+
+.feature-body {
+  font-size: 0.9rem;
+  color: var(--text-mid);
+  line-height: 1.7;
+}
+
+/* BINGO */
+.bingo-section {
+  background: var(--off-white);
+  padding: 6rem 3rem;
+}
+
+.bingo-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 5rem; align-items: center;
+}
+
+.bingo-grid {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 10px;
+}
+
+.b-cell {
+  aspect-ratio: 1;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.62rem; font-weight: 400;
+  text-align: center; padding: 8px;
+  line-height: 1.35;
+  transition: all 0.3s;
+  border: 1.5px solid transparent;
+}
+
+.b-cell.empty {
+  background: var(--white);
+  color: var(--text-muted);
+  border-color: var(--border-light);
+}
+
+.b-cell.done {
+  background: var(--sage-pale);
+  color: var(--forest);
+  border-color: var(--sage-light);
+  font-weight: 500;
+  position: relative;
+}
+
+.b-cell.done::after {
+  content: '✓';
+  position: absolute; top: 5px; right: 7px;
+  font-size: 0.55rem;
+  color: var(--sage);
+}
+
+.b-cell.active {
+  background: var(--forest);
+  color: var(--lime);
+  border-color: var(--forest);
+  font-weight: 500;
+  animation: subtlePulse 3s ease-in-out infinite;
+}
+
+@keyframes subtlePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(45,74,48,0); }
+  50% { box-shadow: 0 0 0 4px rgba(45,74,48,0.12); }
+}
+
+/* EXPERTS */
+.experts-wrap {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 1.25rem; margin-top: 3.5rem;
+}
+
+.expert-card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 2rem;
+  border: 1px solid var(--border-light);
+  transition: all 0.3s;
+}
+
+.expert-card:hover {
+  border-color: var(--sage-light);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(45,74,48,0.08);
+}
+
+.expert-top {
+  display: flex; align-items: center; gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.expert-avatar {
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 1rem; font-weight: 500;
+  flex-shrink: 0;
+}
+
+.expert-avatar.a { background: var(--sage-pale); color: var(--forest); }
+.expert-avatar.b { background: var(--earth-pale); color: #8A5A3A; }
+.expert-avatar.c { background: #F2F8D8; color: var(--lime-dark); }
+
+.expert-area {
+  font-size: 0.7rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--sage);
+  font-weight: 500; margin-bottom: 0.2rem;
+}
+
+.expert-name {
+  font-size: 1rem; font-weight: 500;
+  color: var(--text-dark); letter-spacing: -0.02em;
+}
+
+.expert-bio {
+  font-size: 0.85rem; color: var(--text-muted); line-height: 1.65;
+  margin-bottom: 1.25rem;
+}
+
+.expert-listen-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: 0.8rem; font-weight: 500;
+  color: var(--forest);
+  background: var(--sage-pale);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 100px;
+  transition: all 0.2s;
+}
+
+.expert-listen-btn:hover {
+  background: var(--forest);
+  color: var(--white);
+}
+
+.play-dot {
+  width: 18px; height: 18px;
+  background: var(--forest);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+
+.expert-listen-btn:hover .play-dot {
+  background: var(--lime);
+}
+
+.play-dot::after {
+  content: '';
+  border-left: 5px solid var(--white);
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+  margin-left: 1px;
+}
+
+/* CTA */
+.cta-section {
+  padding: 7rem 3rem;
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 5rem; align-items: center;
+}
+
+.cta-left .section-h2 { margin-bottom: 1.25rem; }
+
+.cta-testimonial {
+  background: var(--off-white);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-top: 2rem;
+  border-left: 3px solid var(--sage);
+}
+
+.testimonial-text {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--text-dark);
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+
+.testimonial-author {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.cta-form-card {
+  background: var(--forest);
+  border-radius: 28px;
+  padding: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-form-card::before {
+  content: '';
+  position: absolute;
+  width: 250px; height: 250px;
+  background: radial-gradient(circle, rgba(200,229,74,0.15) 0%, transparent 70%);
+  top: -60px; right: -60px;
+  pointer-events: none;
+}
+
+.form-eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lime);
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.form-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: var(--white);
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  margin-bottom: 0.6rem;
+}
+
+.form-sub {
+  font-size: 0.875rem;
+  color: rgba(250,250,247,0.55);
+  margin-bottom: 2rem;
+}
+
+.form-field {
+  margin-bottom: 1rem;
+}
+
+.form-input {
+  width: 100%;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 0.875rem 1.25rem;
+  color: var(--white);
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input::placeholder { color: rgba(250,250,247,0.35); }
+.form-input:focus { border-color: var(--lime); }
+
+.form-submit {
+  width: 100%;
+  background: var(--lime);
+  color: var(--forest);
+  border: none;
+  padding: 1rem;
+  border-radius: 12px;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-top: 0.5rem;
+  transition: all 0.25s;
+}
+
+.form-submit:hover {
+  background: #d4f050;
+  transform: translateY(-2px);
+}
+
+.form-fine {
+  font-size: 0.72rem;
+  color: rgba(250,250,247,0.35);
+  text-align: center;
+  margin-top: 0.75rem;
+}
+
+/* FOOTER */
+footer {
+  background: var(--off-white);
+  border-top: 1px solid var(--border-light);
+  padding: 2.5rem 3rem;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.footer-logo {
+  display: flex; align-items: center; gap: 0.6rem;
+  text-decoration: none;
+}
+
+.footer-tagline {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.footer-text {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* RESPONSIVE */
+@media (max-width: 960px) {
+  nav { padding: 1.25rem 1.5rem; }
+  .nav-links { display: none; }
+  .hero { grid-template-columns: 1fr; padding: 7rem 1.5rem 4rem; }
+  .hero-visual { display: none; }
+  .section { padding: 4rem 1.5rem; }
+  .problem-grid, .steps-list, .experts-wrap { grid-template-columns: 1fr; }
+  .how-header { grid-template-columns: 1fr; }
+  .how-wrap { padding: 3rem 1.5rem; border-radius: 20px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .feature-big { grid-row: auto; }
+  .bingo-inner { grid-template-columns: 1fr; }
+  .cta-section { grid-template-columns: 1fr; padding: 4rem 1.5rem; }
+  .bingo-section { padding: 4rem 1.5rem; }
+  .proof-bar { gap: 1.5rem; padding: 1.5rem; flex-wrap: wrap; justify-content: center; }
+  .proof-divider { display: none; }
+  footer { flex-direction: column; gap: 1rem; text-align: center; }
+  .float-card-1, .float-card-2 { display: none; }
+  * { cursor: auto !important; }
+  .cursor, .cursor-ring { display: none; }
+  /* Forzar visibilidad en móvil — observer poco confiable */
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .hero-badge, h1, .hero-sub, .hero-actions { opacity: 1 !important; animation: none !important; }
+  /* Pricing mobile */
+  .pricing-grid { grid-template-columns: 1fr !important; }
+  .plan-card.featured { transform: none !important; }
+  /* Wheel mobile */
+  .wheel-wrap > div { grid-template-columns: 1fr !important; }
+  #wheelCanvas { max-width: 280px; margin: 0 auto; display: block; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 20 20" fill="none">
+        <circle cx="10" cy="10" r="8" stroke="#C8E54A" stroke-width="0.8"/>
+        <circle cx="10" cy="10" r="1.5" fill="#C8E54A"/>
+        <polygon points="10,2 11.2,9 10,10.5 8.8,9" fill="#C8E54A"/>
+        <polygon points="10,18 11.2,11 10,9.5 8.8,11" fill="rgba(200,229,74,0.4)"/>
+      </svg>
+    </div>
+    <span class="logo-text">compass</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#como-funciona">Método</a></li>
+    <li><a href="#herramientas">Herramientas</a></li>
+    <li><a href="#expertos">Expertos</a></li>
+  </ul>
+  <button class="nav-pill">Empieza gratis →</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Lista de espera abierta
+    </div>
+    <h1>
+      La plataforma que te ayuda a<br>
+      <span class="highlight">construir</span>
+      <span class="italic-accent"> la vida que quieres.</span>
+    </h1>
+    <p class="hero-sub">
+      Compass es una plataforma de bienestar integral. Evalúas tu vida hoy, defines tus metas, y te conectamos con guías, contenido y expertos en salud, finanzas y propósito — todo en un solo lugar.
+    </p>
+
+    <!-- Pilares visuales -->
+    <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:2rem;">
+      <div style="display:flex; align-items:center; gap:0.5rem; background:var(--sage-pale); border-radius:100px; padding:0.4rem 1rem;">
+        <span style="font-size:0.9rem;">💪</span>
+        <span style="font-size:0.78rem; font-weight:500; color:var(--forest);">Salud & bienestar</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:0.5rem; background:var(--earth-pale); border-radius:100px; padding:0.4rem 1rem;">
+        <span style="font-size:0.9rem;">💰</span>
+        <span style="font-size:0.78rem; font-weight:500; color:#8A5A3A;">Finanzas personales</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:0.5rem; background:#F2F8D8; border-radius:100px; padding:0.4rem 1rem;">
+        <span style="font-size:0.9rem;">🎯</span>
+        <span style="font-size:0.78rem; font-weight:500; color:var(--lime-dark);">Propósito & carrera</span>
+      </div>
+    </div>
+
+    <div class="hero-actions">
+      <a href="#lista-espera" class="btn-primary">
+        Empieza gratis
+        <span class="arrow">→</span>
+      </a>
+      <a href="#como-funciona" class="btn-outline">Ver cómo funciona</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="hero-card-main">
+      <div class="hero-card-bg-circle"></div>
+      <div class="hero-card-bg-circle2"></div>
+      <div style="position:relative;z-index:1;">
+        <div class="card-eyebrow">Tu life audit</div>
+        <div class="card-score-row">
+          <div class="card-score">74</div>
+          <div class="card-score-label">/ 100<br>puntuación</div>
+        </div>
+        <div class="card-bars">
+          <div class="bar"><div class="bar-fill"></div></div>
+          <div class="bar"><div class="bar-fill"></div></div>
+          <div class="bar"><div class="bar-fill"></div></div>
+          <div class="bar"><div class="bar-fill"></div></div>
+          <div class="bar"><div class="bar-fill"></div></div>
+          <div class="bar"><div class="bar-fill"></div></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;">
+          <span style="font-size:0.6rem;color:rgba(250,250,247,0.4);">Salud</span>
+          <span style="font-size:0.6rem;color:rgba(250,250,247,0.4);">Finanzas</span>
+          <span style="font-size:0.6rem;color:rgba(250,250,247,0.4);">Propósito</span>
+          <span style="font-size:0.6rem;color:rgba(250,250,247,0.4);">Mental</span>
+          <span style="font-size:0.6rem;color:rgba(250,250,247,0.4);">Social</span>
+          <span style="font-size:0.6rem;color:rgba(250,250,247,0.4);">Hábitos</span>
+        </div>
+      </div>
+      <div style="position:relative;z-index:1;">
+        <p style="font-size:0.7rem;color:rgba(250,250,247,0.45);margin-bottom:0.75rem;">Enfócate primero en</p>
+        <div class="card-areas">
+          <span class="area-tag active">Finanzas</span>
+          <span class="area-tag active">Hábitos</span>
+          <span class="area-tag inactive">Social</span>
+          <span class="area-tag inactive">Mental</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating cards -->
+    <div class="float-card-1">
+      <div class="float-icon" style="background:var(--sage-pale);">🎧</div>
+      <div>
+        <div class="float-label">Nuevo episodio</div>
+        <div class="float-value">Finanzas a los 40</div>
+      </div>
+    </div>
+
+    <div class="float-card-2">
+      <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.3rem;">Meta completada ✓</div>
+      <div style="font-size:0.95rem;font-weight:500;color:var(--forest);">Primer 5K 🏃</div>
+      <div style="margin-top:8px;height:4px;background:var(--sage-pale);border-radius:4px;">
+        <div style="width:100%;height:100%;background:var(--sage);border-radius:4px;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROOF BAR -->
+<div class="proof-bar">
+  <span class="proof-label">Una plataforma. Tres áreas de vida.</span>
+  <div class="proof-divider"></div>
+  <div class="proof-stat">
+    <span class="proof-num">500+</span>
+    <span class="proof-desc">personas en<br>lista de espera</span>
+  </div>
+  <div class="proof-divider"></div>
+  <div class="proof-stat">
+    <span class="proof-num">12</span>
+    <span class="proof-desc">expertos<br>curados</span>
+  </div>
+  <div class="proof-divider"></div>
+  <div class="proof-stat">
+    <span class="proof-num">3</span>
+    <span class="proof-desc">áreas de vida<br>integradas</span>
+  </div>
+  <div class="proof-divider"></div>
+  <div class="proof-stat">
+    <span class="proof-num">1</span>
+    <span class="proof-desc">punto de partida:<br>tu life audit</span>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<section class="section reveal">
+  <div class="tag-pill">¿Te suena familiar?</div>
+  <h2 class="section-h2">¿Sabes lo que quieres cambiar<br>pero no <em>sabes por dónde empezar?</em></h2>
+
+  <div class="problem-grid">
+    <div class="problem-card reveal">
+      <span class="problem-emoji">🌀</span>
+      <div class="problem-title">Muchas metas, ningún plan</div>
+      <div class="problem-body">Quieres mejorar tu salud, tus finanzas y tu claridad mental — pero no sabes por dónde empezar y ningún recurso te lo dice de forma integrada.</div>
+    </div>
+    <div class="problem-card reveal" style="transition-delay: 0.1s">
+      <span class="problem-emoji">🎲</span>
+      <div class="problem-title">Asesoría a ciegas</div>
+      <div class="problem-body">Contratar un coach o experto es costoso y riesgoso si no sabes si su forma de pensar va contigo. Y siempre terminas eligiendo sin saber realmente.</div>
+    </div>
+    <div class="problem-card reveal" style="transition-delay: 0.2s">
+      <span class="problem-emoji">🔁</span>
+      <div class="problem-title">Inspiración sin traction</div>
+      <div class="problem-body">Hay infinito contenido motivacional. Lo que no existe es un sistema que convierta tus aspiraciones en pasos concretos — y te ayude a mantenerlos.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="como-funciona">
+  <div class="how-wrap reveal">
+    <div class="how-header">
+      <div>
+        <div class="tag-pill">El método compass</div>
+        <h2 class="section-h2">Tres pasos para<br><em>orientar tu vida.</em></h2>
+      </div>
+      <p>No te pedimos que cambies todo de una vez. Te ayudamos a saber qué cambiar primero, con quién, y cómo saberlo cuando lo lograste.</p>
+    </div>
+
+    <div class="steps-list">
+      <div class="step-item">
+        <div class="step-num">01</div>
+        <div class="step-title">Life Audit — tu diagnóstico</div>
+        <div class="step-desc">Una guía estructurada que te revela exactamente dónde estás estancado y qué quieres diferente. Tu mapa personal, honesto y claro.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">02</div>
+        <div class="step-title">Tu ruta — contenido dirigido</div>
+        <div class="step-desc">Episodios de podcast con expertos que hablan exactamente de tu área de enfoque. Cada episodio termina con un paso accionable concreto.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">03</div>
+        <div class="step-title">Conecta — sin sorpresas</div>
+        <div class="step-desc">Cuando quieras ir más profundo, conectas con el experto que ya conoces por su forma de pensar. Confianza real, no a ciegas.</div>
+      </div>
+    </div>
+
+    <!-- ESTRELLA DE LA VIDA -->
+    <div class="wheel-wrap" style="margin-top:3px;border-top:1px solid rgba(255,255,255,0.08);padding-top:3.5rem;position:relative;z-index:1;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;">
+
+        <!-- LEFT: intro + sliders -->
+        <div>
+          <p style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--lime);font-weight:500;margin-bottom:1rem;">Tu estrella de la vida</p>
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:500;color:var(--white);letter-spacing:-0.03em;line-height:1.2;margin-bottom:0.75rem;">Así se ve tu vida <span style="font-family:'Playfair Display',serif;font-style:italic;font-weight:400;color:var(--lime);">hoy.</span></h3>
+          <p style="font-size:0.875rem;color:rgba(250,250,247,0.5);line-height:1.7;margin-bottom:2rem;">Mueve los sliders y ve cómo cambia tu mapa en tiempo real. Así empieza tu Life Audit en Compass.</p>
+
+          <div id="sliders-container" style="display:flex;flex-direction:column;gap:0.875rem;">
+          </div>
+
+          <div style="margin-top:2rem;padding:1.25rem;background:rgba(200,229,74,0.08);border-radius:14px;border:1px solid rgba(200,229,74,0.2);">
+            <div style="font-size:0.7rem;color:var(--lime);font-weight:500;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.4rem;">Área de mayor oportunidad</div>
+            <div id="lowest-area" style="font-size:1rem;font-weight:500;color:var(--white);">—</div>
+          </div>
+        </div>
+
+        <!-- RIGHT: radar canvas -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1.25rem;">
+          <canvas id="wheelCanvas" width="320" height="320" style="max-width:100%;"></canvas>
+          <div style="display:flex;align-items:center;gap:1.5rem;">
+            <div style="display:flex;align-items:center;gap:0.5rem;">
+              <div style="width:10px;height:10px;border-radius:50%;background:rgba(200,229,74,0.35);border:1.5px solid var(--lime);"></div>
+              <span style="font-size:0.72rem;color:rgba(250,250,247,0.45);">Tu situación actual</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem;">
+              <div style="width:10px;height:10px;border-radius:50%;background:rgba(122,158,126,0.2);border:1.5px dashed rgba(122,158,126,0.5);"></div>
+              <span style="font-size:0.72rem;color:rgba(250,250,247,0.45);">Vida plena (10)</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.slider-row { display:flex; align-items:center; gap:0.875rem; }
+.slider-label { font-size:0.78rem; color:rgba(250,250,247,0.7); width:120px; flex-shrink:0; display:flex; align-items:center; gap:0.4rem; }
+.slider-emoji { font-size:0.9rem; }
+.wheel-slider {
+  -webkit-appearance:none; appearance:none;
+  flex:1; height:4px; border-radius:4px;
+  background: rgba(255,255,255,0.12);
+  outline:none; cursor:pointer;
+}
+.wheel-slider::-webkit-slider-thumb {
+  -webkit-appearance:none; appearance:none;
+  width:16px; height:16px; border-radius:50%;
+  background: var(--lime); cursor:pointer;
+  box-shadow: 0 0 0 3px rgba(200,229,74,0.25);
+  transition: box-shadow 0.2s;
+}
+.wheel-slider::-webkit-slider-thumb:hover { box-shadow: 0 0 0 6px rgba(200,229,74,0.2); }
+.slider-val { font-size:0.78rem; font-weight:600; color:var(--lime); width:18px; text-align:right; flex-shrink:0; }
+
+@media(max-width:960px){
+  .wheel-wrap > div { grid-template-columns:1fr !important; }
+  #wheelCanvas { max-width:280px; }
+}
+</style>
+
+<script id="wheel-script">
+(function(){
+  const areas = [
+    { key:'salud_fisica',   label:'Salud física',       emoji:'💪', val:6 },
+    { key:'salud_mental',   label:'Salud mental',        emoji:'🧠', val:5 },
+    { key:'finanzas',       label:'Finanzas',            emoji:'💰', val:4 },
+    { key:'proposito',      label:'Propósito / carrera', emoji:'🎯', val:7 },
+    { key:'relaciones',     label:'Relaciones',          emoji:'❤️',  val:6 },
+    { key:'crecimiento',    label:'Crecimiento personal',emoji:'🌱', val:5 },
+    { key:'ocio',           label:'Ocio / diversión',    emoji:'🎉', val:4 },
+    { key:'espiritualidad', label:'Espiritualidad',      emoji:'✨', val:6 },
+  ];
+
+  const container = document.getElementById('sliders-container');
+  const lowestEl = document.getElementById('lowest-area');
+  const canvas   = document.getElementById('wheelCanvas');
+  const ctx      = canvas.getContext('2d');
+  const N        = areas.length;
+  const CX = 160, CY = 160, RMAX = 130;
+
+  function buildSliders(){
+    areas.forEach((a, i) => {
+      const row = document.createElement('div');
+      row.className = 'slider-row';
+      row.innerHTML = `
+        <div class="slider-label"><span class="slider-emoji">${a.emoji}</span>${a.label}</div>
+        <input type="range" min="1" max="10" value="${a.val}" class="wheel-slider" data-i="${i}">
+        <span class="slider-val" id="val-${i}">${a.val}</span>`;
+      container.appendChild(row);
+    });
+    container.querySelectorAll('.wheel-slider').forEach(sl => {
+      sl.addEventListener('input', e => {
+        const i = +e.target.dataset.i;
+        areas[i].val = +e.target.value;
+        document.getElementById('val-'+i).textContent = areas[i].val;
+        draw();
+        updateLowest();
+      });
+    });
+  }
+
+  function angle(i){ return (Math.PI * 2 / N) * i - Math.PI / 2; }
+
+  function polarPt(i, r){
+    const a = angle(i);
+    return { x: CX + Math.cos(a)*r, y: CY + Math.sin(a)*r };
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,320,320);
+
+    // Grid rings
+    for(let r=1;r<=10;r++){
+      ctx.beginPath();
+      for(let i=0;i<N;i++){
+        const p = polarPt(i, RMAX*r/10);
+        i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = r===10 ? 'rgba(122,158,126,0.25)' : 'rgba(255,255,255,0.06)';
+      ctx.lineWidth = r===10 ? 1.5 : 0.8;
+      ctx.setLineDash(r===10 ? [4,4] : []);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Spokes
+    for(let i=0;i<N;i++){
+      const p = polarPt(i, RMAX);
+      ctx.beginPath();
+      ctx.moveTo(CX,CY);
+      ctx.lineTo(p.x,p.y);
+      ctx.strokeStyle='rgba(255,255,255,0.08)';
+      ctx.lineWidth=0.8;
+      ctx.stroke();
+    }
+
+    // Filled polygon
+    ctx.beginPath();
+    areas.forEach((a,i)=>{
+      const p = polarPt(i, RMAX * a.val/10);
+      i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y);
+    });
+    ctx.closePath();
+    ctx.fillStyle='rgba(200,229,74,0.18)';
+    ctx.fill();
+    ctx.strokeStyle='rgba(200,229,74,0.85)';
+    ctx.lineWidth=2;
+    ctx.stroke();
+
+    // Dots on vertices
+    areas.forEach((a,i)=>{
+      const p = polarPt(i, RMAX * a.val/10);
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,4,0,Math.PI*2);
+      ctx.fillStyle='#C8E54A';
+      ctx.fill();
+    });
+
+    // Labels
+    ctx.font='500 11px Bricolage Grotesque, sans-serif';
+    ctx.fillStyle='rgba(250,250,247,0.65)';
+    ctx.textAlign='center';
+    areas.forEach((a,i)=>{
+      const p = polarPt(i, RMAX+20);
+      ctx.fillText(a.emoji+' '+a.label.split(' ')[0], p.x, p.y+4);
+    });
+  }
+
+  function updateLowest(){
+    const min = areas.reduce((a,b)=> a.val<=b.val ? a : b);
+    lowestEl.textContent = min.emoji+' '+min.label+' ('+min.val+'/10)';
+  }
+
+  buildSliders();
+  draw();
+  updateLowest();
+})();
+</script>
+
+<!-- FEATURES -->
+<section class="section" id="herramientas">
+  <div class="reveal">
+    <div class="tag-pill">Herramientas</div>
+    <h2 class="section-h2">Todo lo que necesitas,<br><em>integrado en un lugar.</em></h2>
+  </div>
+
+  <div class="features-grid reveal">
+    <div class="feature-big">
+      <div>
+        <div class="feature-icon-wrap">🧭</div>
+        <div class="feature-title">Bingo Board / Bingo Card</div>
+        <div class="feature-body">Defines tus metas del año. Compass las desglosa en pasos concretos, te sugiere recursos específicos para cada una y te ayuda a marcar el progreso — visualmente, en tiempo real.</div>
+      </div>
+      <div style="margin-top:2rem;">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+          <div style="background:rgba(45,74,48,0.08);border-radius:10px;padding:12px;text-align:center;">
+            <div style="font-size:1.2rem;margin-bottom:4px;">🏃</div>
+            <div style="font-size:0.6rem;color:var(--text-muted);">Correr 5K</div>
+          </div>
+          <div style="background:var(--earth-pale);border-radius:10px;padding:12px;text-align:center;border:1.5px solid rgba(196,149,106,0.3);">
+            <div style="font-size:1.2rem;margin-bottom:4px;">💰</div>
+            <div style="font-size:0.6rem;color:var(--text-muted);">Invertir</div>
+          </div>
+          <div style="background:rgba(45,74,48,0.08);border-radius:10px;padding:12px;text-align:center;">
+            <div style="font-size:1.2rem;margin-bottom:4px;">🧘</div>
+            <div style="font-size:0.6rem;color:var(--text-muted);">Meditar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-small">
+      <div class="feature-icon-wrap">🎙️</div>
+      <div class="feature-title">Podcast con expertos</div>
+      <div class="feature-body">Episodios cortos y dirigidos. Escuchas cómo piensan los expertos antes de decidir si quieres conectar.</div>
+    </div>
+
+    <div class="feature-small lime">
+      <div class="feature-icon-wrap">✨</div>
+      <div class="feature-title">Recomendaciones con IA</div>
+      <div class="feature-body">Recursos específicos para tus metas: comunidades, lecturas, herramientas. Sin ruido.</div>
+    </div>
+  </div>
+</section>
+
+<!-- BINGO PREVIEW -->
+<section class="bingo-section">
+  <div class="bingo-inner">
+    <div class="reveal">
+      <div class="tag-pill">Tu progreso, visible</div>
+      <h2 class="section-h2">El bingo de<br><em>tu mejor año.</em></h2>
+      <p style="color:var(--text-mid);font-size:1rem;line-height:1.8;margin-bottom:2rem;">Define lo que quieres lograr. Nosotros lo convertimos en pasos concretos, te sugerimos recursos específicos y te ayudamos a marcarlo como cumplido — uno a uno.</p>
+      <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        <div style="display:flex;align-items:flex-start;gap:0.875rem;">
+          <div style="width:24px;height:24px;background:var(--sage-pale);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+            <span style="font-size:0.7rem;color:var(--forest);">✓</span>
+          </div>
+          <div style="font-size:0.875rem;color:var(--text-mid);line-height:1.6;">
+            <strong style="color:var(--text-dark);font-weight:500;">Correr un 5K</strong> → plan de entrenamiento + comunidad runner + zapatillas recomendadas
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:0.875rem;">
+          <div style="width:24px;height:24px;background:var(--sage-pale);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+            <span style="font-size:0.7rem;color:var(--forest);">✓</span>
+          </div>
+          <div style="font-size:0.875rem;color:var(--text-mid);line-height:1.6;">
+            <strong style="color:var(--text-dark);font-weight:500;">Empezar a invertir</strong> → guía paso a paso + experto financiero disponible para 1:1
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:0.875rem;">
+          <div style="width:24px;height:24px;background:var(--sage-pale);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+            <span style="font-size:0.7rem;color:var(--forest);">✓</span>
+          </div>
+          <div style="font-size:0.875rem;color:var(--text-mid);line-height:1.6;">
+            <strong style="color:var(--text-dark);font-weight:500;">Cambiar de carrera</strong> → claridad de habilidades + coach de transición profesional
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bingo-grid reveal">
+      <div class="b-cell done">Leer 12 libros</div>
+      <div class="b-cell active">Correr 5K</div>
+      <div class="b-cell empty">Meditar 30 días</div>
+      <div class="b-cell done">Fondo de emergencia</div>
+      <div class="b-cell empty">Aprender inglés</div>
+      <div class="b-cell done">Dormir 7h/día</div>
+      <div class="b-cell active">Invertir por primera vez</div>
+      <div class="b-cell empty">Viaje solo/a</div>
+      <div class="b-cell empty">Cambiar de trabajo</div>
+      <div class="b-cell empty">Comer mejor</div>
+      <div class="b-cell done">Sin deudas en tarjeta</div>
+      <div class="b-cell empty">Terapia</div>
+      <div class="b-cell active">Escribir un diario</div>
+      <div class="b-cell empty">Aprender a nadar</div>
+      <div class="b-cell empty">Voluntariado</div>
+      <div class="b-cell empty">Mi propio negocio</div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERTS -->
+<section class="section" id="expertos">
+  <div class="reveal">
+    <div class="tag-pill">Expertos</div>
+    <h2 class="section-h2">Los conoces <em>antes</em><br>de conectar con ellos.</h2>
+    <p style="color:var(--text-mid);max-width:480px;font-size:1rem;line-height:1.75;margin-top:0.75rem;">Cada experto tiene su propio episodio en Compass. Escuchas su forma de pensar — y solo entonces decides si quieres profundizar.</p>
+  </div>
+
+  <div class="experts-wrap reveal">
+    <div class="expert-card">
+      <div class="expert-top">
+        <div class="expert-avatar a">MV</div>
+        <div>
+          <div class="expert-area">Finanzas personales</div>
+          <div class="expert-name">María V.</div>
+        </div>
+      </div>
+      <div class="expert-bio">Planificadora financiera con 12 años de experiencia. Especialista en construir patrimonio desde cero después de los 35.</div>
+      <button class="expert-listen-btn">
+        <span class="play-dot"></span>
+        Escucha su episodio
+      </button>
+    </div>
+
+    <div class="expert-card">
+      <div class="expert-top">
+        <div class="expert-avatar b">CR</div>
+        <div>
+          <div class="expert-area">Salud integral</div>
+          <div class="expert-name">Carlos R.</div>
+        </div>
+      </div>
+      <div class="expert-bio">Médico funcional y coach de hábitos. Combina medicina convencional con cambios de estilo de vida sostenibles para personas ocupadas.</div>
+      <button class="expert-listen-btn">
+        <span class="play-dot"></span>
+        Escucha su episodio
+      </button>
+    </div>
+
+    <div class="expert-card">
+      <div class="expert-top">
+        <div class="expert-avatar c">LP</div>
+        <div>
+          <div class="expert-area">Claridad & propósito</div>
+          <div class="expert-name">Laura P.</div>
+        </div>
+      </div>
+      <div class="expert-bio">Coach de transiciones profesionales. Ayuda a personas en sus 30s y 40s a rediseñar su carrera con dirección y propósito real.</div>
+      <button class="expert-listen-btn">
+        <span class="play-dot"></span>
+        Escucha su episodio
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" id="precios">
+  <style>
+  .pricing-toggle {
+    display:inline-flex; align-items:center; gap:0; margin:2rem 0 3.5rem;
+    background:var(--off-white); border-radius:100px; padding:4px;
+    border:1px solid var(--border-light);
+  }
+  .ptoggle-btn {
+    background:transparent; border:none;
+    padding:0.5rem 1.25rem; border-radius:100px;
+    font-family:'Bricolage Grotesque',sans-serif;
+    font-size:0.82rem; font-weight:500; color:var(--text-muted);
+    transition:all 0.25s; cursor:pointer; white-space:nowrap;
+  }
+  .ptoggle-btn.active {
+    background:var(--forest); color:var(--white);
+    box-shadow:0 2px 12px rgba(45,74,48,0.2);
+  }
+  .save-badge {
+    display:inline-block; background:var(--lime); color:var(--forest);
+    font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:100px;
+    margin-left:6px; letter-spacing:0.04em; vertical-align:middle;
+  }
+
+  .pricing-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem;
+    align-items:start;
+  }
+
+  .plan-card {
+    border-radius:24px; padding:2.25rem 2rem;
+    border:1.5px solid var(--border-light);
+    background:var(--white);
+    position:relative; transition:all 0.3s;
+    display:flex; flex-direction:column; gap:0;
+  }
+  .plan-card:hover { transform:translateY(-5px); box-shadow:0 20px 50px rgba(45,74,48,0.09); }
+
+  .plan-card.featured {
+    background:var(--forest);
+    border-color:var(--forest);
+    transform:translateY(-8px);
+    box-shadow:0 24px 60px rgba(45,74,48,0.22);
+  }
+  .plan-card.featured:hover { transform:translateY(-12px); }
+
+  .plan-badge {
+    display:inline-block; font-size:0.65rem; font-weight:700;
+    padding:3px 10px; border-radius:100px; letter-spacing:0.06em;
+    text-transform:uppercase; margin-bottom:1.5rem;
+  }
+  .plan-card:not(.featured) .plan-badge { background:var(--sage-pale); color:var(--forest); }
+  .plan-card.featured .plan-badge { background:var(--lime); color:var(--forest); }
+
+  .plan-name {
+    font-size:1.25rem; font-weight:500; letter-spacing:-0.03em;
+    margin-bottom:0.3rem;
+  }
+  .plan-card:not(.featured) .plan-name { color:var(--text-dark); }
+  .plan-card.featured .plan-name { color:var(--white); }
+
+  .plan-tagline {
+    font-size:0.83rem; line-height:1.5; margin-bottom:1.75rem;
+  }
+  .plan-card:not(.featured) .plan-tagline { color:var(--text-muted); }
+  .plan-card.featured .plan-tagline { color:rgba(250,250,247,0.55); }
+
+  .plan-price-wrap { margin-bottom:1.75rem; }
+  .plan-price {
+    font-family:'Bricolage Grotesque',sans-serif;
+    font-size:2.6rem; font-weight:500; letter-spacing:-0.04em; line-height:1;
+  }
+  .plan-card:not(.featured) .plan-price { color:var(--text-dark); }
+  .plan-card.featured .plan-price { color:var(--white); }
+
+  .plan-price sup {
+    font-size:1rem; font-weight:400; vertical-align:super; letter-spacing:0;
+  }
+  .plan-price-note {
+    font-size:0.75rem; margin-top:0.3rem;
+  }
+  .plan-card:not(.featured) .plan-price-note { color:var(--text-muted); }
+  .plan-card.featured .plan-price-note { color:rgba(250,250,247,0.45); }
+
+  .plan-divider {
+    height:1px; margin:0 0 1.5rem;
+  }
+  .plan-card:not(.featured) .plan-divider { background:var(--border-light); }
+  .plan-card.featured .plan-divider { background:rgba(255,255,255,0.12); }
+
+  .plan-features { list-style:none; display:flex; flex-direction:column; gap:0.7rem; margin-bottom:2rem; flex:1; }
+  .plan-feat {
+    display:flex; align-items:flex-start; gap:0.65rem;
+    font-size:0.85rem; line-height:1.5;
+  }
+  .plan-card:not(.featured) .plan-feat { color:var(--text-mid); }
+  .plan-card.featured .plan-feat { color:rgba(250,250,247,0.75); }
+
+  .feat-check {
+    width:18px; height:18px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.6rem; margin-top:1px;
+  }
+  .plan-card:not(.featured) .feat-check { background:var(--sage-pale); color:var(--forest); }
+  .plan-card.featured .feat-check { background:rgba(200,229,74,0.2); color:var(--lime); }
+
+  .feat-muted { opacity:0.4; }
+  .feat-check.muted { opacity:0.35; }
+
+  .plan-cta {
+    width:100%; padding:0.9rem; border-radius:12px;
+    font-family:'Bricolage Grotesque',sans-serif;
+    font-size:0.875rem; font-weight:500; letter-spacing:-0.01em;
+    border:none; transition:all 0.25s; cursor:pointer;
+  }
+  .plan-card:not(.featured) .plan-cta {
+    background:var(--off-white); color:var(--forest);
+    border:1.5px solid var(--border-mid);
+  }
+  .plan-card:not(.featured) .plan-cta:hover {
+    background:var(--forest); color:var(--white); border-color:var(--forest);
+  }
+  .plan-card.featured .plan-cta {
+    background:var(--lime); color:var(--forest);
+  }
+  .plan-card.featured .plan-cta:hover { background:#d4f050; transform:translateY(-1px); }
+
+  .pricing-note {
+    text-align:center; margin-top:2.5rem;
+    font-size:0.82rem; color:var(--text-muted);
+  }
+  .pricing-note strong { color:var(--text-mid); font-weight:500; }
+
+  @media(max-width:960px){
+    .pricing-grid { grid-template-columns:1fr; }
+    .plan-card.featured { transform:none; }
+    .plan-card.featured:hover { transform:translateY(-5px); }
+  }
+  </style>
+
+  <div class="reveal">
+    <div class="tag-pill">Planes</div>
+    <h2 class="section-h2">Empieza gratis.<br><em>Crece cuando estés lista.</em></h2>
+    <p style="color:var(--text-mid);max-width:440px;font-size:1rem;line-height:1.75;margin-bottom:0;">Sin tarjeta de crédito para empezar. Cambia o cancela cuando quieras.</p>
+
+    <!-- Toggle mensual/anual -->
+    <div class="pricing-toggle">
+      <button class="ptoggle-btn active" id="btn-mensual" onclick="setPricing('mensual')">Mensual</button>
+      <button class="ptoggle-btn" id="btn-anual" onclick="setPricing('anual')">Anual <span class="save-badge">−30%</span></button>
+    </div>
+  </div>
+
+  <div class="pricing-grid reveal">
+
+    <!-- FREE -->
+    <div class="plan-card">
+      <span class="plan-badge">Gratis</span>
+      <div class="plan-name">Explorar</div>
+      <div class="plan-tagline">Para conocer Compass y tener claridad de dónde estás.</div>
+      <div class="plan-price-wrap">
+        <div class="plan-price"><sup>$</sup>0</div>
+        <div class="plan-price-note">Para siempre gratis</div>
+      </div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li class="plan-feat"><span class="feat-check">✓</span>Life Audit completo</li>
+        <li class="plan-feat"><span class="feat-check">✓</span>Estrella de la vida interactiva</li>
+        <li class="plan-feat"><span class="feat-check">✓</span>2 episodios de podcast por mes</li>
+        <li class="plan-feat"><span class="feat-check">✓</span>Bingo Board básico (sin pasos)</li>
+        <li class="plan-feat"><span class="feat-check muted">—</span><span class="feat-muted">Recomendaciones con IA</span></li>
+        <li class="plan-feat"><span class="feat-check muted">—</span><span class="feat-muted">Conexión con expertos</span></li>
+        <li class="plan-feat"><span class="feat-check muted">—</span><span class="feat-muted">Comunidad Compass</span></li>
+      </ul>
+      <button class="plan-cta">Empieza gratis →</button>
+    </div>
+
+    <!-- EXPLORADOR — FEATURED -->
+    <div class="plan-card featured">
+      <span class="plan-badge">⭐ Más popular</span>
+      <div class="plan-name">Explorador</div>
+      <div class="plan-tagline">Para quien quiere dirección real y un experto cuando lo necesita.</div>
+      <div class="plan-price-wrap">
+        <div class="plan-price" id="price-mid"><sup>$</sup>14</div>
+        <div class="plan-price-note" id="note-mid">por mes · facturado mensualmente</div>
+      </div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li class="plan-feat"><span class="feat-check">✓</span>Todo lo de Explorar</li>
+        <li class="plan-feat"><span class="feat-check">✓</span>Podcast ilimitado</li>
+        <li class="plan-feat"><span class="feat-check">✓</span>Bingo Board completo + pasos accionables</li>
+        <li class="plan-feat"><span class="feat-check">✓</span>Recomendaciones personalizadas con IA</li>
+        <li class="plan-feat"><span class="feat-check">✓</span>Acceso a comunidad Compass</li>
+        <li class="plan-feat"><span class="feat-check">✓</span>1 sesión de 30 min con experto / mes</li>
+        <li class="plan-feat"><span class="feat-check muted">—</span><span class="feat-muted">Sesiones ilimitadas con expertos</span></li>
+      </ul>
+      <button class="plan-cta">Quiero mi lugar →</button>
+    </div>
+
+    <!-- PRO -->
+    <div class="plan-card">
+      <span class="plan-badge">Pro</span>
+      <div class="plan-name">Compass Pro</div>
+      <div class="plan-tagline">Para quien quiere acompañamiento profundo y acceso sin límites.</div>
+      <div class="plan-price-wrap">
+        <div class="plan-price" id="price-pro"><sup>$</sup>39</div>
+        <div class="plan-price-note" id="note-pro">por mes · facturado mensualmente</div>
+      </div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li class="plan-feat"><span class="feat-check">✓</span>Todo lo de Explorador</li>
+        <li class="plan-feat"><span class="feat-check">✓</span>Sesiones ilimitadas con expertos</li>
+        <li class="plan-feat"><span class="feat-check">✓</span>Acceso prioritario a nuevos expertos</li>
+        <li class="plan-feat"><span class="feat-check">✓</span>Sesión de onboarding personalizado</li>
+        <li class="plan-feat"><span class="feat-check">✓</span>Recursos exclusivos por área de vida</li>
+        <li class="plan-feat"><span class="feat-check">✓</span>Soporte directo con el equipo Compass</li>
+        <li class="plan-feat"><span class="feat-check">✓</span>Acceso anticipado a nuevas funciones</li>
+      </ul>
+      <button class="plan-cta">Empieza con Pro →</button>
+    </div>
+
+  </div>
+
+  <p class="pricing-note reveal">¿Tienes dudas sobre qué plan es para ti? <strong>Empieza gratis</strong> — siempre puedes actualizar después.</p>
+</section>
+
+<script>
+function setPricing(mode){
+  const isMensual = mode === 'mensual';
+  document.getElementById('btn-mensual').classList.toggle('active', isMensual);
+  document.getElementById('btn-anual').classList.toggle('active', !isMensual);
+  document.getElementById('price-mid').innerHTML = isMensual ? '<sup>$</sup>14' : '<sup>$</sup>10';
+  document.getElementById('note-mid').textContent  = isMensual ? 'por mes · facturado mensualmente' : 'por mes · facturado $118/año';
+  document.getElementById('price-pro').innerHTML = isMensual ? '<sup>$</sup>39' : '<sup>$</sup>27';
+  document.getElementById('note-pro').textContent  = isMensual ? 'por mes · facturado mensualmente' : 'por mes · facturado $325/año';
+}
+</script>
+
+<!-- CTA -->
+<section class="cta-section" id="lista-espera">
+  <div class="cta-left reveal">
+    <div class="tag-pill">Acceso anticipado</div>
+    <h2 class="section-h2">¿Lista para encontrar<br><em>tu norte?</em></h2>
+    <p style="color:var(--text-mid);font-size:1rem;line-height:1.75;">Únete a la lista de espera. Serás de las primeras personas en acceder a Compass — y obtendrás tu Life Audit gratis al lanzar.</p>
+
+    <div class="cta-testimonial">
+      <div class="testimonial-text">"Llevaba tres años hablando de los mismos cambios. Lo que me faltaba no era motivación — era saber exactamente qué hacer primero."</div>
+      <div class="testimonial-author">— Ana C., 38 años · Lista de espera</div>
+    </div>
+  </div>
+
+  <div class="reveal" style="transition-delay:0.15s;">
+    <div class="cta-form-card">
+      <div class="form-eyebrow">Lista de espera</div>
+      <div class="form-title">Tu vida<br>empieza aquí.</div>
+      <div class="form-sub">Acceso anticipado + Life Audit gratis al lanzar.</div>
+
+      <div class="form-field">
+        <input type="text" class="form-input" placeholder="Tu nombre">
+      </div>
+      <div class="form-field">
+        <input type="email" class="form-input" placeholder="tu@email.com">
+      </div>
+      <button class="form-submit">Quiero mi lugar en Compass →</button>
+      <p class="form-fine">Sin spam. Sin compromiso. Puedes salir cuando quieras.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="footer-logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 20 20" fill="none">
+        <circle cx="10" cy="10" r="8" stroke="#C8E54A" stroke-width="0.8"/>
+        <circle cx="10" cy="10" r="1.5" fill="#C8E54A"/>
+        <polygon points="10,2 11.2,9 10,10.5 8.8,9" fill="#C8E54A"/>
+      </svg>
+    </div>
+    <span class="logo-text">compass</span>
+  </a>
+  <span class="footer-tagline">Encuentra tu norte.</span>
+  <span class="footer-text">© 2025 Compass. Todos los derechos reservados.</span>
+</footer>
+
+<script>
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+});
+
+function animRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top = ry + 'px';
+  requestAnimationFrame(animRing);
+}
+animRing();
+
+document.querySelectorAll('button, a').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.width = '18px';
+    cursor.style.height = '18px';
+    ring.style.width = '48px';
+    ring.style.height = '48px';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursor.style.width = '10px';
+    cursor.style.height = '10px';
+    ring.style.width = '36px';
+    ring.style.height = '36px';
+  });
+});
+
+// En móvil forzar todo visible directamente
+if (window.innerWidth <= 960) {
+  document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+} else {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+}
+</script>
+</body>
+</html>
