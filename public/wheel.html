@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compass — Rueda de la Vida</title>
+<style>
+:root {
+  --teal:      #1A7A6B;
+  --teal-dark: #0F5549;
+  --teal-mid:  #1D9E75;
+  --teal-lt:   #E8F5F3;
+  --teal-xlt:  #F2FAF8;
+  --gold:      #D4A853;
+  --sand:      #F7F3EC;
+  --ink:       #1C2B2A;
+  --ink-50:    #6B8482;
+  --ink-30:    #A8BFBD;
+  --white:     #FDFCFA;
+  --border:    #DDE9E7;
+  --font:      'Georgia', serif;
+  --font-ui:   'Helvetica Neue', Arial, sans-serif;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { -webkit-font-smoothing:antialiased; }
+body { font-family:var(--font-ui); background:var(--sand); color:var(--ink); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+
+/* SPLASH */
+#splash { position:fixed; inset:0; z-index:200; background:var(--sand); display:flex; align-items:center; justify-content:center; flex-direction:column; gap:16px; transition:opacity .4s; }
+#splash.hide { opacity:0; pointer-events:none; }
+.splash-mark { width:60px; height:60px; border-radius:18px; background:var(--teal); display:flex; align-items:center; justify-content:center; animation:pulse 2s ease-in-out infinite; }
+.splash-mark svg { width:32px; height:32px; }
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+.splash-name { font-size:24px; font-weight:700; color:var(--teal); font-family:var(--font); }
+.splash-sub  { font-size:11px; color:var(--ink-50); letter-spacing:1.2px; text-transform:uppercase; }
+
+/* TOPBAR */
+.topbar { background:var(--white); border-bottom:1px solid var(--border); padding:0 24px; height:56px; display:flex; align-items:center; gap:12px; flex-shrink:0; box-shadow:0 1px 4px rgba(26,122,107,.06); z-index:10; }
+.top-mark { width:34px; height:34px; border-radius:9px; background:var(--teal); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.top-mark svg { width:19px; height:19px; }
+.top-brand { font-size:17px; font-weight:700; color:var(--teal); font-family:var(--font); }
+.top-sub { font-size:10px; color:var(--ink-50); letter-spacing:.8px; text-transform:uppercase; margin-top:1px; }
+.top-right { margin-left:auto; display:flex; align-items:center; gap:10px; }
+.prog-badge { font-size:11px; font-weight:600; padding:4px 11px; border-radius:999px; background:var(--teal-lt); color:var(--teal); transition:all .3s; }
+.prog-badge.done { background:var(--teal); color:#fff; }
+.btn-new { padding:5px 13px; border:1px solid var(--border); background:transparent; border-radius:999px; cursor:pointer; color:var(--ink-50); font-family:var(--font-ui); font-size:12px; font-weight:600; transition:.15s; }
+.btn-new:hover { border-color:var(--teal); color:var(--teal); background:var(--teal-lt); }
+
+/* LAYOUT */
+.main { flex:1; display:flex; overflow:hidden; }
+
+/* CHAT */
+.chat-col { flex:1; min-width:0; display:flex; flex-direction:column; border-right:1px solid var(--border); }
+.msgs { flex:1; overflow-y:auto; padding:24px 22px; display:flex; flex-direction:column; gap:14px; scroll-behavior:smooth; }
+.msgs::-webkit-scrollbar { width:4px; }
+.msgs::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+/* WELCOME */
+.welcome { display:flex; flex-direction:column; align-items:center; text-align:center; padding:32px 20px 20px; gap:12px; }
+.welcome-icon { width:68px; height:68px; background:var(--teal-lt); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; border:2px solid var(--border); }
+.welcome h3 { font-size:21px; color:var(--teal); font-family:var(--font); font-weight:700; }
+.welcome p { font-size:14px; color:var(--ink-50); line-height:1.7; max-width:380px; }
+.welcome-areas { display:flex; flex-wrap:wrap; gap:7px; justify-content:center; max-width:400px; }
+.wa-chip { padding:5px 12px; background:var(--white); border:1px solid var(--border); border-radius:999px; font-size:12px; color:var(--ink-50); display:flex; align-items:center; gap:5px; }
+
+/* MESSAGES */
+.row { display:flex; gap:10px; align-items:flex-end; animation:msgUp .22s ease; }
+.row.user { flex-direction:row-reverse; }
+@keyframes msgUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.av { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; margin-bottom:3px; }
+.av.bot { background:var(--teal-lt); }
+.av.usr { background:var(--gold); color:#fff; font-size:11px; font-weight:700; }
+.bbl { max-width:min(500px,76%); padding:12px 16px; border-radius:17px; font-size:14px; line-height:1.75; word-break:break-word; }
+.row.bot .bbl { background:var(--white); color:var(--ink); border-bottom-left-radius:4px; border:1px solid var(--border); box-shadow:0 1px 4px rgba(26,122,107,.05); }
+.row.user .bbl { background:var(--teal); color:#fff; border-bottom-right-radius:4px; }
+.bbl p { margin-bottom:4px; } .bbl p:last-child { margin-bottom:0; }
+
+/* TYPING */
+.typing-row { display:flex; gap:10px; align-items:flex-end; }
+.tdots { background:var(--white); border:1px solid var(--border); border-radius:17px; border-bottom-left-radius:4px; padding:13px 16px; display:flex; gap:5px; align-items:center; }
+.td { width:7px; height:7px; border-radius:50%; background:var(--teal); opacity:.4; animation:td 1.3s infinite; }
+.td:nth-child(2){animation-delay:.2s} .td:nth-child(3){animation-delay:.4s}
+@keyframes td { 0%,80%,100%{transform:scale(1);opacity:.4} 40%{transform:scale(1.35);opacity:1} }
+
+/* INPUT */
+.input-row { background:var(--white); border-top:1px solid var(--border); padding:13px 18px; display:flex; gap:10px; align-items:flex-end; flex-shrink:0; }
+#txt { flex:1; padding:11px 15px; border:1.5px solid var(--border); border-radius:15px; font-family:var(--font-ui); font-size:14px; background:var(--sand); color:var(--ink); outline:none; resize:none; max-height:120px; line-height:1.5; transition:border-color .15s; }
+#txt:focus { border-color:var(--teal); }
+#txt::placeholder { color:var(--ink-30); }
+#sbtn { width:42px; height:42px; background:var(--teal); border:none; border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background .15s,transform .1s; }
+#sbtn:hover { background:var(--teal-dark); }
+#sbtn:active { transform:scale(.92); }
+#sbtn:disabled { background:var(--ink-30); cursor:not-allowed; }
+#sbtn svg { width:17px; height:17px; fill:#fff; }
+
+/* WHEEL PANEL */
+.wheel-col { width:310px; flex-shrink:0; display:flex; flex-direction:column; background:var(--teal-xlt); overflow-y:auto; }
+.wheel-col::-webkit-scrollbar { width:4px; }
+.wheel-col::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+.wheel-pending { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px 24px; gap:14px; }
+.wp-icon { width:72px; height:72px; border-radius:50%; background:var(--white); border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:34px; }
+.wheel-pending h4 { font-size:15px; color:var(--teal); font-family:var(--font); font-weight:700; }
+.wheel-pending p { font-size:13px; color:var(--ink-50); line-height:1.65; max-width:210px; }
+.area-dots { display:flex; flex-wrap:wrap; gap:7px; justify-content:center; }
+.adot { width:11px; height:11px; border-radius:50%; background:var(--border); transition:background .4s,transform .3s; }
+.adot.on { background:var(--teal); transform:scale(1.15); }
+.wheel-ready { display:none; padding-bottom:20px; }
+.wh-top { padding:18px 20px 6px; }
+.wh-title { font-size:14px; font-weight:700; color:var(--teal); font-family:var(--font); }
+.wh-sub { font-size:11px; color:var(--ink-50); margin-top:2px; }
+.canvas-wrap { padding:8px 14px 4px; display:flex; justify-content:center; }
+#wc { display:block; max-width:100%; }
+.scores { padding:4px 18px 8px; display:flex; flex-direction:column; gap:8px; }
+.srow { display:flex; align-items:center; gap:9px; }
+.slbl { font-size:11px; color:var(--ink); width:90px; flex-shrink:0; display:flex; align-items:center; gap:5px; font-weight:500; }
+.sdot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.strack { flex:1; height:5px; background:var(--border); border-radius:3px; overflow:hidden; }
+.sfill { height:100%; border-radius:3px; transition:width .9s cubic-bezier(.4,0,.2,1); width:0%; }
+.snum { font-size:11px; font-weight:700; width:18px; text-align:right; flex-shrink:0; }
+
+@media(max-width:680px) { .wheel-col{display:none} .topbar{padding:0 14px} .msgs{padding:16px 12px} .input-row{padding:11px 12px} }
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="splash-mark">
+    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+      <circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="7.5"/><line x1="12" y1="16.5" x2="12" y2="21"/>
+      <line x1="3" y1="12" x2="7.5" y2="12"/><line x1="16.5" y1="12" x2="21" y2="12"/>
+      <circle cx="12" cy="12" r="2.5" fill="white" stroke="white"/>
+    </svg>
+  </div>
+  <div class="splash-name">Compass</div>
+  <div class="splash-sub">Cargando tu experiencia...</div>
+</div>
+
+<div class="topbar">
+  <div class="top-mark">
+    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+      <circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="7.5"/><line x1="12" y1="16.5" x2="12" y2="21"/>
+      <line x1="3" y1="12" x2="7.5" y2="12"/><line x1="16.5" y1="12" x2="21" y2="12"/>
+      <circle cx="12" cy="12" r="2.5" fill="white" stroke="white"/>
+    </svg>
+  </div>
+  <div>
+    <div class="top-brand">Compass</div>
+    <div class="top-sub">Life Planning</div>
+  </div>
+  <div class="top-right">
+    <span class="prog-badge" id="prog-badge">Iniciando...</span>
+    <button class="btn-new" onclick="resetChat()">Nueva sesión</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="chat-col">
+    <div class="msgs" id="msgs">
+      <div class="welcome" id="welcome">
+        <div class="welcome-icon">🧭</div>
+        <h3>Hola, soy tu guía Compass</h3>
+        <p>Vamos a explorar juntos las 8 áreas más importantes de tu vida. No hay respuestas correctas — solo las tuyas.</p>
+        <div class="welcome-areas">
+          <div class="wa-chip">💪 Salud</div>
+          <div class="wa-chip">💰 Finanzas</div>
+          <div class="wa-chip">🚀 Carrera</div>
+          <div class="wa-chip">🤝 Relaciones</div>
+          <div class="wa-chip">🏠 Familia</div>
+          <div class="wa-chip">❤️ Amor</div>
+          <div class="wa-chip">🌱 Crecimiento</div>
+          <div class="wa-chip">🎨 Ocio</div>
+        </div>
+      </div>
+    </div>
+    <div class="input-row">
+      <textarea id="txt" rows="1" placeholder="Escribe tu respuesta aquí..." onkeydown="hk(event)" oninput="grow(this)"></textarea>
+      <button id="sbtn" onclick="send()">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="wheel-col">
+    <div class="wheel-pending" id="wp">
+      <div class="wp-icon">🎯</div>
+      <h4>Tu rueda aparecerá aquí</h4>
+      <p>Conforme exploramos tu vida, la rueda se dibuja en tiempo real.</p>
+      <div class="area-dots">
+        <div class="adot" id="d-salud"></div><div class="adot" id="d-finanzas"></div>
+        <div class="adot" id="d-carrera"></div><div class="adot" id="d-relaciones"></div>
+        <div class="adot" id="d-familia"></div><div class="adot" id="d-amor"></div>
+        <div class="adot" id="d-crecimiento"></div><div class="adot" id="d-ocio"></div>
+      </div>
+    </div>
+    <div class="wheel-ready" id="wr">
+      <div class="wh-top">
+        <div class="wh-title">Rueda de la Vida</div>
+        <div class="wh-sub" id="wh-sub">diagnóstico en progreso...</div>
+      </div>
+      <div class="canvas-wrap"><canvas id="wc" width="274" height="274"></canvas></div>
+      <div class="scores" id="scores"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const AREAS = [
+  {key:'salud',       label:'Salud',       emoji:'💪', color:'#1A7A6B'},
+  {key:'finanzas',    label:'Finanzas',     emoji:'💰', color:'#D4A853'},
+  {key:'carrera',     label:'Carrera',      emoji:'🚀', color:'#E07B54'},
+  {key:'relaciones',  label:'Relaciones',   emoji:'🤝', color:'#7B68EE'},
+  {key:'familia',     label:'Familia',      emoji:'🏠', color:'#4AAFAA'},
+  {key:'amor',        label:'Amor',         emoji:'❤️', color:'#E9937A'},
+  {key:'crecimiento', label:'Crecimiento',  emoji:'🌱', color:'#8AB56E'},
+  {key:'ocio',        label:'Ocio',         emoji:'🎨', color:'#C47BAA'},
+];
+
+const SYSTEM = `Eres el agente de vida de Compass, una plataforma de life planning. Tu rol es guiar al usuario con calidez y profundidad para descubrir su Rueda de la Vida.
+
+PROCESO:
+1. Saluda calurosamente y haz una pregunta abierta inicial sobre cómo siente su vida en general.
+2. Explora de forma natural las 8 áreas: salud, finanzas, carrera, relaciones, familia, amor/pareja, crecimiento personal, ocio.
+3. Por cada área haz 1-2 preguntas reflexivas. Escucha y valida. NUNCA preguntes puntajes al usuario.
+4. Cuando tengas contexto de TODAS las 8 áreas incluye al final:
+WHEEL_DATA:{"salud":X,"finanzas":X,"carrera":X,"relaciones":X,"familia":X,"amor":X,"crecimiento":X,"ocio":X}
+5. Después ofrece una reflexión breve de 2-3 oraciones sobre los patrones que ves.
+
+REGLAS:
+- Siempre en español. Tono cálido y genuino, como coach de vida.
+- Máximo 3-4 oraciones por respuesta. Una sola pregunta por turno.
+- Solo incluye WHEEL_DATA cuando tengas las 8 áreas evaluadas.`;
+
+let hist = [], scores = {}, busy = false;
+
+async function callAPI(messages) {
+  const res = await fetch('/api/chat', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({model:'claude-sonnet-4-20250514', max_tokens:700, system:SYSTEM, messages})
+  });
+  if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.error?.message || `Error ${res.status}`); }
+  const d = await res.json();
+  return d.content?.[0]?.text || '...';
+}
+
+window.addEventListener('load', async () => {
+  setBusy(true);
+  const te = addTyping();
+  try {
+    const init = [{role:'user', content:'Hola'}];
+    const reply = await callAPI(init);
+    te.remove();
+    hist = [{role:'user',content:'Hola'},{role:'assistant',content:reply}];
+    rmWelcome();
+    addMsg('bot', stripWheel(reply));
+    updateProg();
+  } catch(e) {
+    te.remove();
+    const fb = '¡Hola! Me alegra que estés aquí. ¿Cómo sientes que está tu vida en este momento?';
+    hist.push({role:'assistant',content:fb});
+    rmWelcome();
+    addMsg('bot', fb);
+  }
+  setBusy(false);
+  hideSplash();
+});
+
+async function send() {
+  if (busy) return;
+  const el = document.getElementById('txt');
+  const text = el.value.trim();
+  if (!text) return;
+  el.value = ''; el.style.height = 'auto';
+  addMsg('user', text);
+  hist.push({role:'user', content:text});
+  setBusy(true);
+  const te = addTyping();
+  try {
+    const reply = await callAPI(hist);
+    te.remove();
+    const m = reply.match(/WHEEL_DATA:(\{[^}]+\})/);
+    if (m) { try { scores = JSON.parse(m[1]); renderWheel(); } catch(e){} }
+    hist.push({role:'assistant', content:reply});
+    addMsg('bot', stripWheel(reply));
+    updateProg();
+  } catch(e) {
+    te.remove();
+    addMsg('bot','⚠️ Hubo un error. Por favor intenta de nuevo.');
+  }
+  setBusy(false);
+}
+
+function resetChat() {
+  if (!confirm('¿Comenzar una nueva sesión?')) return;
+  hist = []; scores = {};
+  document.getElementById('msgs').innerHTML = '';
+  addWelcome();
+  document.getElementById('wp').style.display = 'flex';
+  document.getElementById('wr').style.display = 'none';
+  document.getElementById('prog-badge').textContent = 'Iniciando...';
+  document.getElementById('prog-badge').classList.remove('done');
+  AREAS.forEach(a => document.getElementById('d-'+a.key)?.classList.remove('on'));
+  window.dispatchEvent(new Event('load'));
+}
+
+function renderWheel() {
+  document.getElementById('wp').style.display = 'none';
+  document.getElementById('wr').style.display = 'block';
+  const done = Object.keys(scores).length;
+  document.getElementById('wh-sub').textContent = done >= 8 ? 'diagnóstico completo' : `${done} / 8 áreas exploradas`;
+  drawRadar(); drawBars();
+}
+
+function drawRadar() {
+  const canvas = document.getElementById('wc');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2, maxR = W/2 - 32, N = AREAS.length;
+  ctx.clearRect(0, 0, W, H);
+  for (let r = 1; r <= 10; r++) {
+    const rad = (r/10)*maxR;
+    ctx.beginPath();
+    for (let i = 0; i < N; i++) {
+      const a = (i/N)*Math.PI*2 - Math.PI/2;
+      i===0 ? ctx.moveTo(cx+rad*Math.cos(a), cy+rad*Math.sin(a)) : ctx.lineTo(cx+rad*Math.cos(a), cy+rad*Math.sin(a));
+    }
+    ctx.closePath();
+    ctx.strokeStyle = r%2===0 ? 'rgba(26,122,107,0.13)' : 'rgba(26,122,107,0.06)';
+    ctx.lineWidth = 1; ctx.stroke();
+    if (r===5||r===10) { ctx.fillStyle='rgba(107,132,130,0.45)'; ctx.font='9px Arial'; ctx.textAlign='left'; ctx.fillText(r, cx+4, cy-rad+2); }
+  }
+  for (let i = 0; i < N; i++) {
+    const a = (i/N)*Math.PI*2 - Math.PI/2;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+maxR*Math.cos(a), cy+maxR*Math.sin(a));
+    ctx.strokeStyle='rgba(26,122,107,0.12)'; ctx.lineWidth=1; ctx.stroke();
+    ctx.font='14px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(AREAS[i].emoji, cx+(maxR+17)*Math.cos(a), cy+(maxR+17)*Math.sin(a));
+  }
+  const pts = AREAS.map((area,i) => {
+    const v = scores[area.key]??0, a = (i/N)*Math.PI*2 - Math.PI/2;
+    return {x:cx+(v/10)*maxR*Math.cos(a), y:cy+(v/10)*maxR*Math.sin(a), color:area.color};
+  });
+  ctx.beginPath(); pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
+  ctx.closePath(); ctx.fillStyle='rgba(26,122,107,0.10)'; ctx.fill();
+  ctx.strokeStyle='#1A7A6B'; ctx.lineWidth=2.2; ctx.stroke();
+  pts.forEach((p,i)=>{
+    ctx.beginPath(); ctx.arc(p.x,p.y,6,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
+    ctx.strokeStyle=AREAS[i].color; ctx.lineWidth=2.5; ctx.stroke();
+    ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2); ctx.fillStyle=AREAS[i].color; ctx.fill();
+  });
+}
+
+function drawBars() {
+  const c = document.getElementById('scores'); c.innerHTML='';
+  AREAS.forEach(area=>{
+    const v = scores[area.key]??0;
+    const row = document.createElement('div'); row.className='srow';
+    row.innerHTML=`<div class="slbl"><div class="sdot" style="background:${area.color}"></div>${area.label}</div><div class="strack"><div class="sfill" id="sf-${area.key}" style="background:${area.color}"></div></div><div class="snum" style="color:${area.color}">${v>0?v:'—'}</div>`;
+    c.appendChild(row);
+    requestAnimationFrame(()=>setTimeout(()=>{ const el=document.getElementById('sf-'+area.key); if(el) el.style.width=(v/10*100)+'%'; },60));
+  });
+}
+
+function updateProg() {
+  const done = Object.keys(scores).length;
+  const badge = document.getElementById('prog-badge');
+  AREAS.forEach(a=>{ const d=document.getElementById('d-'+a.key); if(d&&scores[a.key]) d.classList.add('on'); });
+  if (done>=8) { badge.textContent='✓ Diagnóstico completo'; badge.classList.add('done'); document.getElementById('wh-sub').textContent='diagnóstico completo'; }
+  else if (done>0) { badge.textContent=`${done} / 8 áreas`; badge.classList.remove('done'); }
+  else badge.textContent='Explorando...';
+}
+
+function addMsg(role, text) {
+  const c = document.getElementById('msgs');
+  const row = document.createElement('div'); row.className='row '+role;
+  const av = document.createElement('div'); av.className='av '+(role==='bot'?'bot':'usr'); av.textContent=role==='bot'?'🧭':'Tú';
+  const bbl = document.createElement('div'); bbl.className='bbl'; bbl.innerHTML=fmt(text);
+  if(role==='bot'){row.appendChild(av);row.appendChild(bbl);}else{row.appendChild(bbl);row.appendChild(av);}
+  c.appendChild(row); scrollBot(); return row;
+}
+
+function addTyping() {
+  const c = document.getElementById('msgs');
+  const w = document.createElement('div'); w.className='typing-row';
+  const av = document.createElement('div'); av.className='av bot'; av.textContent='🧭';
+  const d = document.createElement('div'); d.className='tdots';
+  d.innerHTML='<div class="td"></div><div class="td"></div><div class="td"></div>';
+  w.appendChild(av); w.appendChild(d); c.appendChild(w); scrollBot(); return w;
+}
+
+function addWelcome() {
+  const c = document.getElementById('msgs');
+  const wb = document.createElement('div'); wb.className='welcome'; wb.id='welcome';
+  wb.innerHTML=`<div class="welcome-icon">🧭</div><h3>Hola, soy tu guía Compass</h3><p>Vamos a explorar juntos las 8 áreas más importantes de tu vida.</p><div class="welcome-areas"><div class="wa-chip">💪 Salud</div><div class="wa-chip">💰 Finanzas</div><div class="wa-chip">🚀 Carrera</div><div class="wa-chip">🤝 Relaciones</div><div class="wa-chip">🏠 Familia</div><div class="wa-chip">❤️ Amor</div><div class="wa-chip">🌱 Crecimiento</div><div class="wa-chip">🎨 Ocio</div></div>`;
+  c.appendChild(wb);
+}
+
+function rmWelcome() { const wb=document.getElementById('welcome'); if(wb) wb.remove(); }
+function fmt(t) { t=t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>'); return t.split(/\n\n+/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join(''); }
+function stripWheel(t) { return t.replace(/WHEEL_DATA:\{[^}]+\}/,'').trim(); }
+function setBusy(v) { busy=v; document.getElementById('sbtn').disabled=v; }
+function scrollBot() { const c=document.getElementById('msgs'); c.scrollTop=c.scrollHeight; }
+function hk(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} }
+function grow(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,120)+'px'; }
+function hideSplash() { const s=document.getElementById('splash'); s.classList.add('hide'); setTimeout(()=>s.style.display='none',450); }
+</script>
+</body>
+</html>
